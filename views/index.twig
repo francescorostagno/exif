@@ -2,11 +2,37 @@
 
 {% block body %}
   <div class="container">
+      <div class="row">
+          <h1>
+              EXIF
+          </h1>
+      </div>
     <div class="row">
-      <form method="post" action="/upload" enctype="multipart/form-data">
-        <input type="file" name="image" />
-        <button type="submit" name="upload">Upload</button>
-      </form>
+        <div class="col">
+            <form method="post" action="/upload" enctype="multipart/form-data">
+                <input type="file" name="image" />
+                <button type="submit" name="upload">Upload</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <form method="post" action="/select"  >
+                <select class="js-example-basic-single" name="selectedImage" onchange="this.form.submit()">
+                    <option></option>
+                    {% for image in images %}
+                        <option value="{{ image }}">{{ image }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+        <div class="col">
+            <form method="post" action="/Save" >
+                <input type="hidden" name="newImage" value=""/>
+                <input type="text" name="name" value="" required/>
+                <button type="submit" name="upload">Save</button>
+            </form>
+        </div>
     </div>
     <div class="row">
       <div id="image-container">
@@ -40,20 +66,24 @@
   </div>
   <script>
 
-
+      $(document).ready(function() {
+          $('.js-example-basic-single').select2({
+              tags: "true",
+              placeholder: "Select an option",
+              allowClear: true
+          });
+      });
     function rotateImage(){
           let img = document.getElementById('file-input');
           let orientationImage = parseInt($('input[name=orientation]').val());
           loadImage(img.src, { orientation: orientationImage + 1 ,  maxWidth: img.clientWidth,
             maxHeight: img.clientHeight, canvas: false}).then(function (data) {
             const newImage = data.image.toDataURL();
-            console.log(newImage);
-
-            $('#file-input').attr('src',newImage)
-            $('input[name=orientation]').val(orientationImage + 1)
+            $('#file-input').attr('src',newImage);
+            $('input[name=newImage]').val(newImage);
+            $('input[name=orientation]').val(orientationImage + 1);
           })
     }
-
 
     </script>
 {% endblock %}
